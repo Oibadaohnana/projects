@@ -1,8 +1,11 @@
+#install
+rustup default stable
+rustup component add rust-analyzer
+
 #Rust init
 cargo init
 cargo run
 
-rustup component add rust-analyzer
 
 8-bit	i8	u8
 16-bit	i16	u16
