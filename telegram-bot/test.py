@@ -1,32 +1,29 @@
-#!/usr/bin/env python3
-import yaml
+import logging
+from telegram import Update
+from telegram.ext import filters, MessageHandler, ApplicationBuilder, CommandHandler, ContextTypes
 
-def get_bills():
-    bills =[]
-    while True:
-        name = str(input("Enter your name: ")).lower()
-        if name == "q":
-            print (f"{bills}  those bills are added.")
-            break
-        billamount= float(input("Enter the amount: "))
-        comment = str(input("Enter a comment: "))
-        bill = {"name": name,
-                    "billamount": billamount,
-                    "comment": comment
-                    }
-        bills.append(bill)
-        continue
-    return bills
 
-def write_bills_to_file(bills):
-    with open("bill_test_file.yaml", "a") as bill_test_file:
-        yaml.dump(bills ,bill_test_file, sort_keys=True)
-    print(yaml.dump(bills, sort_keys=True))
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
-def main():
-    bills = get_bills()
-    write_bills_to_file(bills)
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
 
-__init__ = "__main__"
-if __init__ == "__main__":
-    main()
+
+    
+if __name__ == '__main__':
+    token_file = open("/home/benji/nixcfg/scripts/telegram_bot/token.txt","r")
+    token=token_file.read()
+    application = ApplicationBuilder().token(token).build()
+
+    start_handler = CommandHandler('start', start)
+    echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
+    print()
+    application.add_handler(start_handler)
+    application.add_handler(echo_handler)
+
+    application.run_polling()
